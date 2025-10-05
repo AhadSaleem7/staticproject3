@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ग्रामीण स्वास्थ्य सहायक - Rural Healthcare Bot</title>
+    
+    <!-- PWA Support -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#21808D">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="स्वास्थ्य सहायक">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.svg">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+</head>
+<body>
+    <!-- Landing Page -->
+    <div id="landing-page" class="landing-page">
+        <div class="landing-content">
+            <div class="logo-section">
+                <div class="app-logo">🏥</div>
+                <h1>ग्रामीण स्वास्थ्य सहायक</h1>
+                <p class="subtitle">Rural Healthcare Bot</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🩺</div>
+                    <h3>तुरंत सलाह</h3>
+                    <p>लक्षणों की जांच करें</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <h3>अपॉइंटमेंट</h3>
+                    <p>डॉक्टर से मिलें</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚨</div>
+                    <h3>आपातकाल</h3>
+                    <p>तुरंत मदद पाएं</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>स्वास्थ्य शिक्षा</h3>
+                    <p>जानकारी पाएं</p>
+                </div>
+            </div>
+            
+            <button class="btn btn--primary start-chat-btn" onclick="startChat()">
+                <span>चैट शुरू करें</span>
+                <span>Start Chat</span>
+            </button>
+            
+            <div class="supported-by">
+                <p>Supported by PMJAY & Digital India Initiative</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Interface -->
+    <div id="chat-interface" class="chat-interface hidden">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="header-left">
+                <button class="back-btn" onclick="goBack()">←</button>
+                <div class="bot-avatar">🏥</div>
+                <div class="bot-info">
+                    <div class="bot-name">ग्रामीण स्वास्थ्य बॉट</div>
+                    <div class="bot-status">
+                        <span class="status-dot"></span>
+                        <span id="bot-status-text">ऑनलाइन</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="language-toggle" onclick="toggleLanguage()">
+                    <span id="lang-text">EN</span>
+                </button>
+                <button class="menu-btn">⋮</button>
+            </div>
+        </div>
+
+        <!-- Messages Container -->
+        <div class="messages-container" id="messages-container">
+            <div class="welcome-message">
+                <div class="date-separator">आज</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions" id="quick-actions">
+            <button class="quick-action-btn" data-action="symptoms">
+                <span class="action-icon">🩺</span>
+                <span class="action-text">लक्षण जांच</span>
+            </button>
+            <button class="quick-action-btn" data-action="appointment">
+                <span class="action-icon">📅</span>
+                <span class="action-text">अपॉइंटमेंट</span>
+            </button>
+            <button class="quick-action-btn" data-action="emergency">
+                <span class="action-icon">🚨</span>
+                <span class="action-text">आपातकाल</span>
+            </button>
+            <button class="quick-action-btn" data-action="education">
+                <span class="action-icon">📚</span>
+                <span class="action-text">स्वास्थ्य टिप्स</span>
+            </button>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input-container">
+            <div class="input-wrapper">
+                <button class="attachment-btn">📎</button>
+                <input type="text" 
+                       class="chat-input" 
+                       id="chat-input" 
+                       placeholder="संदेश लिखें... Type a message..."
+                       maxlength="500">
+                <button class="voice-btn" id="voice-btn">🎤</button>
+                <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
+            </div>
+            <div class="typing-indicator hidden" id="typing-indicator">
+                <span class="dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+                <span>बॉट लिख रहा है...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Modal -->
+    <div class="modal hidden" id="emergency-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🚨 आपातकालीन सहायता</h3>
+                <button class="modal-close" onclick="closeModal('emergency-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <p><strong>तुरंत कॉल करें:</strong></p>
+                <div class="emergency-contacts">
+                    <a href="tel:108" class="emergency-contact">
+                        <span class="contact-icon">🚑</span>
+                        <div>
+                            <div class="contact-name">एम्बुलेंस</div>
+                            <div class="contact-number">108</div>
+                        </div>
+                    </a>
+                    <a href="tel:01234567890" class="emergency-contact">
+                        <span class="contact-icon">🏥</span>
+                        <div>
+                            <div class="contact-name">जिला अस्पताल</div>
+                            <div class="contact-number">01234-567890</div>
+                        </div>
+                    </a>
+                    <a href="tel:1066" class="emergency-contact">
+                        <span class="contact-icon">☎️</span>
+                        <div>
+                            <div class="contact-name">पॉइज़न कंट्रोल</div>
+                            <div class="contact-number">1066</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nearby Facilities Modal -->
+    <div class="modal hidden" id="facilities-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📍 नजदीकी स्वास्थ्य केंद्र</h3>
+                <button class="modal-close" onclick="closeModal('facilities-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="facility-list">
+                    <div class="facility-item">
+                        <div class="facility-icon">🏥</div>
+                        <div class="facility-info">
+                            <div class="facility-name">जिला अस्पताल</div>
+                            <div class="facility-details">5 km • 24/7 खुला</div>
+                            <div class="facility-type">सरकारी अस्पताल</div>
+                        </div>
+                    </div>
+                    <div class="facility-item">
+                        <div class="facility-icon">🏥</div>
+                        <div class="facility-info">
+                            <div class="facility-name">PHC केंद्र</div>
+                            <div class="facility-details">2 km • 8 AM - 6 PM</div>
+                            <div class="facility-type">प्राथमिक स्वास्थ्य केंद्र</div>
+                        </div>
+                    </div>
+                    <div class="facility-item">
+                        <div class="facility-icon">👩‍⚕️</div>
+                        <div class="facility-info">
+                            <div class="facility-name">आशा कार्यकर्ता - सुनीता देवी</div>
+                            <div class="facility-details">500m • कॉल करें: 9876543210</div>
+                            <div class="facility-type">ASHA Worker</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offline Indicator -->
+    <div class="offline-indicator hidden" id="offline-indicator">
+        <span>⚠️ कोई इंटरनेट कनेक्शन नहीं</span>
+    </div>
+
+    <!-- jQuery for easier DOM manipulation -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- SweetAlert2 for better alerts and prompts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Hammer.js for touch gestures -->
+    <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+    
+    <!-- Application script -->
+    <script src="app.js"></script>
+</body>
+</html>
